@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: Telex Waitlist API
+  version: 1.0.0
+  description: |
+    Public waitlist endpoint for collecting signups.  
+    Note: share the docs URL with frontend devs, not direct API endpoints.
+servers:
+  - url: https://api.staging.telex.im/api
+    description: Staging
+  - url: http://localhost:8080/api
+    description: Local
+paths:
+  /v1/waitlist:
+    post:
+      summary: Add an email to the waitlist
+      description: Add a new waitlist entry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitlistRequest'
+            example:
+              name: Jane Doe
+              email: jane@example.com
+      responses:
+        "201":
+          description: Email added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistCreatedResponse'
+              example:
+                status: success
+                status_code: 201
+                message: "Added to waitlist"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: Bad Request
+                status_code: 400
+                message: "Invalid input"
+        "401":
+          description: Authentication error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: Unauthorized
+                status_code: 401
+                message: "Unauthorized"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: Internal Server Error
+                status_code: 500
+                message: "Internal error"
+components:
+  schemas:
+    WaitlistRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+    WaitlistCreatedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        status_code:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: Added to waitlist
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        status_code:
+          type: integer
+        message:
+          type: string
